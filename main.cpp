@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
 
 
     // multiply
-    complex_matrix *= complex_matrix;
+    complex_matrix *= Complex<int>(2,0);
 
     // print again
     for (int i = 0; i < *rows; ++i) {

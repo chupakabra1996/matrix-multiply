@@ -31,6 +31,10 @@ public:
 
     Complex<T> &operator*=(const Complex<T> &other);
 
+    Complex<T> &operator*=(const T &multiplier);
+
+    Complex<T> &operator*(const T &multiplier);
+
     Complex<T> &operator=(const Complex<T> &other);
 
     template<class U>
@@ -151,6 +155,22 @@ template<class T>
 Complex<T> &Complex<T>::operator*=(const Complex<T> &other) {
     this->re = this->re * other.re - this->im * other.im;
     this->im = this->re * other.im + this->im * other.re;
+    return *this;
+}
+
+
+template<class T>
+Complex<T> &Complex<T>::operator*(const T &multiplier) {
+    Complex<T> copy(*this);
+    copy *= multiplier;
+    return copy;
+}
+
+
+template<class T>
+Complex<T> &Complex<T>::operator*=(const T &multiplier) {
+    Complex<T> m(multiplier, T());
+    (*this) *= m;
     return *this;
 }
 
