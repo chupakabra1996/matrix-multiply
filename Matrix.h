@@ -38,8 +38,6 @@ public:
 
     size_t get_columns() const;
 
-    std::string to_string() const;
-
     template<class U>
     friend std::ostream &operator<<(std::ostream &os, const Matrix<U> &matrix);
 
@@ -67,8 +65,6 @@ private:
 template<class T>
 Matrix<T>::~Matrix() {
 
-    std::cout << "Matrix destructor" << std::endl;
-
     if (data) {
         for (int i = 0; i < rows; ++i)
             delete[] data[i];
@@ -83,23 +79,17 @@ Matrix<T>::~Matrix() {
 
 
 template<class T>
-Matrix<T>::Matrix():rows(0), columns(0), data(nullptr) {
-
-    std::cout << "Matrix default constructor" << std::endl;
-}
+Matrix<T>::Matrix():rows(0), columns(0), data(nullptr) { }
 
 
 template<class T>
 Matrix<T>::Matrix(char *filename) : Matrix() {
-    std::cout << "Matrix constructor, read from file" << std::endl;
     read_from_file(filename);
 }
 
 
 template<class T>
 Matrix<T>::Matrix(size_t rows, size_t columns) {
-
-    std::cout << "Matrix constructor, rows and columns" << std::endl;
 
     if (rows <= 0 || columns <= 0) {
         std::cerr << "Invalid rows/columns -> rows: " << rows << ", columns: " << columns << std::endl;
@@ -112,8 +102,6 @@ Matrix<T>::Matrix(size_t rows, size_t columns) {
 
 template<class T>
 Matrix<T>::Matrix(const Matrix<T> &other) : Matrix(other.rows, other.columns) {
-
-    std::cout << "Matrix copy constructor" << std::endl;
 
     if (other.data) {
         copy_data(other.data);
@@ -145,8 +133,6 @@ Matrix<T>::Matrix(T **data, size_t rows, size_t columns): Matrix(rows, columns) 
 template<class T>
 Matrix<T> &Matrix<T>::operator=(const Matrix<T> &other) {
 
-    std::cout << "Matrix copy assignment operator" << std::endl;
-
     if (this != &other) {
         this->~Matrix(); // destroy previous object
 
@@ -162,8 +148,6 @@ Matrix<T> &Matrix<T>::operator=(const Matrix<T> &other) {
 // NOTE: changes this matrix
 template<class T>
 Matrix<T> &Matrix<T>::operator+=(const Matrix<T> &other) {
-
-    std::cout << "Matrix operator +=" << std::endl;
 
     if (this->columns == other.columns && this->rows == other.rows) {
 
@@ -185,8 +169,6 @@ Matrix<T> &Matrix<T>::operator+=(const Matrix<T> &other) {
 template<class T>
 const Matrix<T> Matrix<T>::operator+(const Matrix<T> &other) {
 
-    std::cout << "Matrix operator*" << std::endl;
-
     Matrix<T> result(*this); // copy
 
     result += other;
@@ -198,15 +180,13 @@ const Matrix<T> Matrix<T>::operator+(const Matrix<T> &other) {
 template<class T>
 Matrix<T> &Matrix<T>::operator*=(const Matrix<T> &other) {
 
-    std::cout << "Matrix operator *= " << std::endl;
-
     if (this->columns == other.rows) {
 
         Matrix<T> result(this->rows, other.columns);
 
         int	tid, nthreads, chunk = 0;
 
-        chunk = 2; // rows per thread
+        chunk = 1; // rows per thread
 
 
         #pragma omp parallel
@@ -249,8 +229,6 @@ Matrix<T> &Matrix<T>::operator*=(const Matrix<T> &other) {
 template<class T>
 const Matrix<T> Matrix<T>::operator*(const Matrix<T> &other) {
 
-    std::cout << "Matrix operator*" << std::endl;
-
     Matrix<T> result(*this); // copy
 
     result *= other;
@@ -261,8 +239,6 @@ const Matrix<T> Matrix<T>::operator*(const Matrix<T> &other) {
 
 template<class T>
 Matrix<T> &Matrix<T>::operator*=(const T &multiplier) {
-
-    std::cout << "Matrix operator* to multiplier" << std::endl;
 
     for (int i = 0; i < columns; ++i) {
         for (int j = 0; j < rows; ++j) {
@@ -379,26 +355,6 @@ void Matrix<T>::init_matrix(size_t rows, size_t columns) {
     }
 }
 
-template<class T>
-std::string Matrix<T>::to_string() const {
-    std::string result;
-    result.append("Matrix: {\n\n");
-
-    for (int i = 0; i < rows; ++i) {
-        result.append("\t");
-        for (int j = 0; j < columns; ++j) {
-            result.append(std::to_string(data[i][j])).append("\t");
-        }
-        result.append("\n");
-    }
-
-    result.append("\n");
-    result.append("\t").append("Rows: ").append(std::to_string(rows)).append("\n");
-    result.append("\t").append("Columns: ").append(std::to_string(columns)).append("\n");
-    result.append("\n}\n");
-
-    return result;
-}
 
 template<class T>
 void Matrix<T>::copy_data(T **other_data) {
